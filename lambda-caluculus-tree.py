@@ -64,7 +64,25 @@ def abst_tree(string):
 	node.right,l= abst_tree(string[1:])
 	return node,l+1
 		
+def print_expression(node):
+	if(node.right is None and node.left is None ):
+		print(node.name,end = '')
+	else:
+		if node.name == "*" :
+			print("(", end = '')
+			print_expression(node.left)
+			print_expression(node.right)
+			print(")", end = '')
+		elif node.name == ".":
+			print("L", end = "")
+			print_expression(node.left)
+			print(".(", end = "")
+			print_expression(node.right)
+			print(")", end = "")
+		else:
+			print_expression(node.left)
+			print_expression(node.right)
 
 l = "Lxypq.xp(ypq)"
 node,i = tree(l)
-print_tree(node,0)
+print_expression(node)
