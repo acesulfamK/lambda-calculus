@@ -17,35 +17,54 @@ def print_tree(node,depth):
 
 
 	
-def appl_tree(string):
-	node = Node(string[0])
-	for i in range(1,len(string)):
+def tree(string):
+	i = 0
+	if string[0] == "L" :
+		return abst_tree(string[1:])
+	while(i < len(string)):
 		if string[i] == "(":
-			node2 = Node("*")
-			node2.left = node
-			node2.right = appl_tree(string[i+1:])
-			node = node2
+			if string[i+1] == "L":
+				if(i == 0):
+					node,x = abst_tree(string[i+2:])
+					i += x + 2
+					
+				else:
+					node2 = Node("*")
+					node2.left = node
+					node2.right,x = abst_tree(string[i+2:])
+					node = node2
+					i += x + 2
+			else:
+				node2 = Node("*")
+				node2.left = node
+				node2.right,x = tree(string[i+1:])
+				i += x + 1
+				node = node2
 		elif string[i] == ")":
-			return node
+			return node,i
 		else:
-			node2 = Node("*")
-			node2.left = node
-			node2.right = Node(string[i])
-			node.parent = Node(node2)
-			node = node2
-	return node
+			if i == 0:
+				node = Node(string[0])
+			else:
+				node2 = Node("*")
+				node2.left = node
+				node2.right = Node(string[i])
+				node.parent = Node(node2)
+				node = node2
+		i = i+1
+	return node,i
 
 
+def abst_tree(string):
+	if(string[0] == "."):
+		pre,l = tree(string[1:])
+		return pre,l+1
+	node = Node(".")
+	node.left = Node(string[0])
+	node.right,l= abst_tree(string[1:])
+	return node,l+1
+		
 
-
-
-
-root = Node("10")
-root.left = Node("9")
-root.right = Node("8")
-root.right.left = Node("6")
-print_tree(root,0)
-
-l = "abcde"
-node = appl_tree(l)
+l = "Lxypq.xp(ypq)"
+node,i = tree(l)
 print_tree(node,0)
