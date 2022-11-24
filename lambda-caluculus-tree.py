@@ -15,8 +15,32 @@ def print_tree(node,depth):
 		print_tree(node.left,depth+1)
 	return
 
-	
+def bracket_checker(string):
+	count = 0
+	i = 0
+	for i in range(len(string)):
+		if string[i] == "(":
+			count += 1
+		elif string[i] == ")":
+			count -= 1
+		if count<0:
+			print("syntax error: brackets are wrong!")
+			return 1
+	if count != 0:
+		print("syntax error: brackets are wrong!")
+		return 1
+	return 0
+    
+		
+def isvar(c):
+	if c in ["L","(",")","."]:
+		return False
+	else:
+		return True
+
 def tree(string,current):
+	if bracket_checker(string)== 1:
+		return "error"
 	node = None
 	while current < len(string) :
 		if string[current] == "(":
@@ -32,7 +56,7 @@ def tree(string,current):
 			return node,current
 		elif string[current] == "L":
 			node,current = tree_abst(string,current+1)
-		else:
+		elif isvar(string[current]):
 			if node == None :
 				node = Node(string[current])
 			else:
@@ -40,6 +64,9 @@ def tree(string,current):
 				node2.left = node
 				node2.right = Node(string[current])
 				node = node2
+		else:
+			print("syntax error: maybe, there is wrong \".\"")
+			return "error"
 		current += 1
 	return node,current
 
@@ -50,11 +77,15 @@ def tree_abst(string,current):
 		if current != len(string) and string[current] == ")":
 			current -= 1
 		return node,current
-	else:
+	elif isvar(string[current]):
 		node = Node(".")
 		node.left = Node(string[current])
 		node.right,current = tree_abst(string,current+1)
 		return node,current
+	else:
+		print("syntax error: there are something wrong after \"L\" before \".\"")
+		return "error"
+		
 		
 def print_expression(node):
 	if(node.right is None and node.left is None ):
