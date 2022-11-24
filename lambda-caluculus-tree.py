@@ -15,54 +15,55 @@ def print_tree(node,depth):
 		print_tree(node.left,depth+1)
 	return
 
-
+def isvar(c):
+	if c == ")":
+		return False
+	elif c == ")":
+		return False
+	elif c == "L":
+		return False
+	else:
+		return True
 	
-def tree(string):
-	i = 0
-	if string[0] == "L" :
-		return abst_tree(string[1:])
-	while(i < len(string)):
-		if string[i] == "(":
-			if string[i+1] == "L":
-				if(i == 0):
-					node,x = abst_tree(string[i+2:])
-					i += x + 2
-					
-				else:
-					node2 = Node("*")
-					node2.left = node
-					node2.right,x = abst_tree(string[i+2:])
-					node = node2
-					i += x + 2
+def tree(string,current):
+	node = None
+	while current < len(string) :
+		if string[current] == "(":
+			if node == None:
+				node,current = tree(string,current+1)
 			else:
 				node2 = Node("*")
 				node2.left = node
-				node2.right,x = tree(string[i+1:])
-				i += x + 1
+				node2.right,current = tree(string,current+1)
 				node = node2
-		elif string[i] == ")":
-			return node,i
+
+		elif string[current] == ")":
+			return node,current
+		elif string[current] == "L":
+			node,current = tree_abst(string,current+1)
 		else:
-			if i == 0:
-				node = Node(string[0])
+			if node == None :
+				node = Node(string[current])
 			else:
 				node2 = Node("*")
 				node2.left = node
-				node2.right = Node(string[i])
-				node.parent = Node(node2)
+				node2.right = Node(string[current])
 				node = node2
-		i = i+1
-	return node,i
+		current += 1
+	return node,current
 
 
-def abst_tree(string):
-	if(string[0] == "."):
-		pre,l = tree(string[1:])
-		return pre,l+1
-	node = Node(".")
-	node.left = Node(string[0])
-	node.right,l= abst_tree(string[1:])
-	return node,l+1
+def tree_abst(string,current):
+	if(string[current] == '.'):
+		node,current = tree(string, current+1)
+		if current != len(string) and string[current] == ")":
+			current -= 1
+		return node,current
+	else:
+		node = Node(".")
+		node.left = Node(string[current])
+		node.right,current = tree_abst(string,current+1)
+		return node,current
 		
 def print_expression(node):
 	if(node.right is None and node.left is None ):
@@ -84,5 +85,5 @@ def print_expression(node):
 			print_expression(node.right)
 
 l = "Lxypq.xp(ypq)"
-node,i = tree(l)
-print_expression(node)
+node,i = tree(l,0)
+print_tree(node,0)
