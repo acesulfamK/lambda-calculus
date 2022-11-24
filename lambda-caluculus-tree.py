@@ -106,6 +106,6 @@ def print_expression(node):
 			print_expression(node.left)
 			print_expression(node.right)
 
-l = "Lxypq.xp(ypq)"
+l = "Lxypq.xp(ypq)(Lfx.f(fx))(Lfx.f(f(fx)))"
 node,i = tree(l,0)
 print_tree(node,0)
