@@ -15,15 +15,6 @@ def print_tree(node,depth):
 		print_tree(node.left,depth+1)
 	return
 
-def isvar(c):
-	if c == ")":
-		return False
-	elif c == ")":
-		return False
-	elif c == "L":
-		return False
-	else:
-		return True
 	
 def tree(string,current):
 	node = None
