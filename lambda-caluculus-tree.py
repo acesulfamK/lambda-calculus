@@ -6,6 +6,9 @@ print_tree(Node):
 print_expression(node,option = "casual"):
 	ノードを受けると、そのノード以下の木構造をラムダ式に直してプリントする
 
+node.assign("c",node):
+	自由変数"c"をnodeの表すラムダ式に置き換える。
+
 '''
 
 import numpy as np
@@ -28,7 +31,7 @@ class Node:
 		if self.parent != None:
 			if self.parent.left == self:
 				self.parent.add_left(node)
-			elif self.parent.right == node:
+			elif self.parent.right == self:
 				self.parent.add_right(node)
 
 	def swap_name(self,a,b):
@@ -52,8 +55,8 @@ class Node:
 		if self.name == a:
 			self.swap_node(node)
 		elif self.name == ".":
-			if self.left.name in node.characters_set():
-				self.swap_name(self.left.name,diff_char(self.characters_set()|node.characters_set()).pop())
+			if self.left.name in node.characters_set(set()):
+				self.swap_name(self.left.name,diff_char(self.characters_set(set())|node.characters_set(set())).pop())
 			if self.left.name == a:
 				return 
 		if self.left != None:
@@ -89,7 +92,7 @@ def bracket_checker(string):
     
 		
 def isvar(c):
-	if c in ["L","(",")","."]:
+	if c in ["L","(",")",".","*"]:
 		return False
 	else:
 		return True
@@ -157,6 +160,7 @@ def print_expression(node,option = "casual"):
 	else:
 		print("error:an option of print_expression is wrong")
 	print('\n')
+
 	
 def print_formal_expression(node):
 	if(node.right is None and node.left is None ):
@@ -178,7 +182,7 @@ def print_formal_expression(node):
 			print_formal_expression(node.right)
 			
 def print_casual_expression(node):
-	if (isvar(node.name)):
+	if isvar(node.name):
 		print(node.name,end = '')
 	elif node.name == "*" :
 			if(node.parent != None and node.parent.name == "*"  and node != node.parent.left):
@@ -238,20 +242,14 @@ def diff_char(char_set):
 
 		
 l = "(Lxypq.xp(ypq))(Lfx.f(fx))(Lfx.f(f(fx)))"
-l = "(Ly.x)"
+l2 = "(La.ba)(Lc.bac(Lc.ca))"
+l3 = "Lab.cabacbd"
 m = "Lz.z"
-node,i = tree(l,0)
-mnode,i = tree(m,0)
 
-print_tree(node,0)
-
-print_expression(node,option = "casual")
-
-node.swap_name("x","u")
-print_expression(node)
-
-node.assign("u",mnode)
-
-print_expression(node)
-
-print(node.characters_set())
+nodel2,i = tree(l2)
+nodel3,i = tree(l3)
+nodem,i = tree(m)
+print_expression(nodel2,option = "formal")
+print_expression(nodel3)
+nodel3.assign("c",nodem)
+print_expression(nodel3)
