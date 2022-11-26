@@ -8,6 +8,7 @@ print_expression(node,option = "casual"):
 
 '''
 
+import numpy as np
 
 class Node:
 	def __init__(self,name):
@@ -22,6 +23,43 @@ class Node:
 	def add_right(self,node):
 		self.right= node
 		node.parent = self
+		
+	def swap_node(self,node):
+		if self.parent != None:
+			if self.parent.left == self:
+				self.parent.add_left(node)
+			elif self.parent.right == node:
+				self.parent.add_right(node)
+
+	def swap_name(self,a,b):
+		if self.name == a:
+			self.name = b
+		if self.left != None:
+			self.left.swap_name(a,b)
+		if self.right != None:
+			self.right.swap_name(a,b)
+
+	def characters_set(self,s = set({})):
+		if self.name not in (s | set([".","*"])):
+			s.add(self.name)
+		if self.left != None:
+			s = self.left.characters_set(s)
+		if self.right != None :
+			s = self.right.characters_set(s)
+		return s
+			
+	def assign(self,a,node):
+		if self.name == a:
+			self.swap_node(node)
+		elif self.name == ".":
+			if self.left.name in node.characters_set():
+				self.swap_name(self.left.name,diff_char(self.characters_set()|node.characters_set()).pop())
+			if self.left.name == a:
+				return 
+		if self.left != None:
+			self.left.assign(a,node)
+		if self.right != None:
+			self.right.assign(a,node)
 
 def print_tree(node,depth = 0):
 	print("\t"*depth+str(node.name))
@@ -118,6 +156,7 @@ def print_expression(node,option = "casual"):
 		print_casual_expression(node)
 	else:
 		print("error:an option of print_expression is wrong")
+	print('\n')
 	
 def print_formal_expression(node):
 	if(node.right is None and node.left is None ):
@@ -139,23 +178,28 @@ def print_formal_expression(node):
 			print_formal_expression(node.right)
 			
 def print_casual_expression(node):
-	if(node.right is None and node.left is None ):
+	if (isvar(node.name)):
 		print(node.name,end = '')
-	else:
-		if node.name == "*" :
+	elif node.name == "*" :
 			if(node.parent != None and node.parent.name == "*"  and node != node.parent.left):
 				print("(", end = '')
 			print_casual_expression(node.left)
 			print_casual_expression(node.right)
 			if(node.parent != None and  node.parent.name == "*" and node != node.parent.left):
 				print(")", end = '')
-		elif node.name == ".":
-			if(node.parent != None and not node.parent.name == "."):
+	elif node.name == ".":
+			if node.parent == None:
+				print("L",end = "")
+			elif(node.parent != None and not node.parent.name == "."):
 				print("(L",end="")
+
 			print_casual_expression(node.left)
-			if(node.parent != None and not node.right.name == "."):
+
+			if(node.right.name != "."):
 				print(".",end="")
+
 			print_casual_expression(node.right)
+
 			if(node.parent != None and not node.parent.name == "."):
 				print(")",end="")
 
@@ -175,9 +219,39 @@ def bracket_checker(string):
 		print("syntax error: brackets are wrong!")
 		return 1
 	return 0
+
+
     
+def diff_char(char_set):
+	'''
+		argument: char_set
+		return: set
+	'''
+	s = np.array(range(97,123))
+	character_set= set({})
+	
+	for i in s:
+		character_set.add(chr(i))
+	
+	diff = character_set.difference(char_set)
+	return diff
+
 		
 l = "(Lxypq.xp(ypq))(Lfx.f(fx))(Lfx.f(f(fx)))"
+l = "(Ly.x)"
+m = "Lz.z"
 node,i = tree(l,0)
+mnode,i = tree(m,0)
+
 print_tree(node,0)
+
 print_expression(node,option = "casual")
+
+node.swap_name("x","u")
+print_expression(node)
+
+node.assign("u",mnode)
+
+print_expression(node)
+
+print(node.characters_set())
